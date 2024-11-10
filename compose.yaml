@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  service_a:
+    build:
+      context: ./service_a
+      dockerfile: Dockerfile
+    ports:
+      - 8000:80
+    volumes:
+      - ./service_a:/var/www/html/service_a
+      - ./service_a/apache.conf:/etc/apache2/sites-enabled/000-default.conf
+    environment:
+      - DB_HOST=mysql
+      - DB_DATABASE=service_a
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+      - APACHE_RUN_DIR=/var/run/apache2
+      - APACHE_PID_FILE=/var/run/apache2/apache2.pid
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+      - APACHE_LOG_DIR=/var/log/apache2
+      - SERVER_NAME=localhost
+
+  service_b:
+    build:
+      context: ./service_b
+      dockerfile: Dockerfile
+    ports:
+      - 8001:80
+    volumes:
+      - ./service_b:/var/www/html/service_b
+      - ./service_b/apache.conf:/etc/apache2/sites-enabled/000-default.conf
+    environment:
+      - DB_HOST=mysql
+      - DB_DATABASE=service_b
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+      - APACHE_RUN_DIR=/var/run/apache2
+      - APACHE_PID_FILE=/var/run/apache2/apache2.pid
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+      - APACHE_LOG_DIR=/var/log/apache2
+      - SERVER_NAME=localhost
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=service_a
+      - MYSQL_DATABASE=service_b
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
